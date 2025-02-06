@@ -10,7 +10,7 @@ float gsAlt = 4546.1;
 
 // Conversion factor
 const float EARTH_RADIUS = 6371000;  // in meters
-
+/*
 void parseCoordinates(const std::string &data) {
     size_t gsLatIndex = nthIndexOf(data, ',', 3) + 1;
     size_t gsLonIndex = nthIndexOf(data, ',', 4) + 1;
@@ -34,7 +34,26 @@ void parseCoordinates(const std::string &data) {
     trackerAltIndex = nextComma + 1;
     nextComma = data.find(',', trackerAltIndex);
     rocketAlt = std::stof(data.substr(trackerAltIndex, nextComma - trackerAltIndex));
+} */
+
+void parseCoordinates(const std::string &data) {
+    try {
+        if (std::count(data.begin(), data.end(), ',') < 8) {
+            throw std::runtime_error("Invalid data format");
+        }
+        
+        size_t trackerLatIndex = nthIndexOf(data, ',', 6) + 1;
+        size_t trackerLonIndex = nthIndexOf(data, ',', 7) + 1;
+        size_t trackerAltIndex = nthIndexOf(data, ',', 8) + 1;
+
+        rocketLat = std::stof(data.substr(trackerLatIndex, data.find(',', trackerLatIndex) - trackerLatIndex));
+        rocketLon = std::stof(data.substr(trackerLonIndex, data.find(',', trackerLonIndex) - trackerLonIndex));
+        rocketAlt = std::stof(data.substr(trackerAltIndex, data.find(',', trackerAltIndex) - trackerAltIndex));
+    } catch (const std::exception &e) {
+        std::cerr << "Error parsing coordinates: " << e.what() << std::endl;
+    }
 }
+
 
 size_t nthIndexOf(const std::string &str, char ch, int n) {
     size_t index = -1;
