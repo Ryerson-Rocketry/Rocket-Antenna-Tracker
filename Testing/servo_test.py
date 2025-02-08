@@ -1,4 +1,5 @@
 import math
+import socket
 
 # Ground station coordinates
 gs_lat = 32.94608
@@ -42,7 +43,7 @@ def calculate_elevation(lat1, lon1, alt1, lat2, lon2, alt2):
     # Convert radians to degrees
     return math.degrees(elevation)
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     while True:
         data = input("Enter rocket coordinates (latitude,longitude,altitude): ")
         rocket_lat, rocket_lon, rocket_alt = map(float, data.split(','))
@@ -51,4 +52,31 @@ if __name__ == "__main__":
         elevation = calculate_elevation(gs_lat, gs_lon, gs_alt, rocket_lat, rocket_lon, rocket_alt)
 
         print(f"Calculated Azimuth: {azimuth:.2f} degrees")
-        print(f"Calculated Elevation: {elevation:.2f} degrees")
+        print(f"Calculated Elevation: {elevation:.2f} degrees")'''
+
+if __name__ == "__main__":
+    # Set up the UDP server
+    udp_ip = "127.0.0.1"
+    udp_port = 5005
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((udp_ip, udp_port))
+
+    print(f"Listening for data on {udp_ip}:{udp_port}...")
+
+    while True:
+        data, addr = sock.recvfrom(1024)  # Buffer size of 1024 bytes
+        if not data:
+            continue
+
+        try:
+            print("listening")
+            rocket_lat, rocket_lon, rocket_alt = map(float, data.decode('utf-8').split(','))
+            azimuth = calculate_azimuth(gs_lat, gs_lon, rocket_lat, rocket_lon)
+            elevation = calculate_elevation(gs_lat, gs_lon, gs_alt, rocket_lat, rocket_lon, rocket_alt)
+
+            print(f"Received from {addr}:")
+            print(f"Calculated Azimuth: {azimuth:.2f} degrees")
+            print(f"Calculated Elevation: {elevation:.2f} degrees")
+        except ValueError:
+            print("Invalid data format. Expected latitude,longitude,altitude.")
