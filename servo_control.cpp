@@ -1,7 +1,7 @@
 #include <Servo.h>
-#include <Math.h>
+#include <math.h>
 
-Servo servoX;
+Servo servoX;s
 Servo servoY;
 
 const int servoXPin = 9;
